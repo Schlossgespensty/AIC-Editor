@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIC Editor</title>
+<style>
+body { font-family: Arial; background:#1e1e1e; color:#eee; margin:20px;}
+button { background:#3a7bd5; color:white; border:none; padding:6px 10px; border-radius:6px; margin:10px; cursor:pointer; min-width: 125px;}
+details { margin-bottom:10px; border:1px solid #444; border-radius:10px; padding:10px; background:#2a2a2a;}
+summary { font-weight:bold; cursor:pointer;}
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+#form {
+  max-width: 900px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.field {  
+  display: grid;
+  grid-template-columns: minmax(200px, 1fr) 200px 30px;
+  align-items: center;
+  gap: 8px;
+  margin-top: 0px;
+  max-width: 700px;
+  min-height: 30px; 
+  width: 100%;
+}
+
+.field span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+.topbar,
+#form {
+  max-width: 700px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.topbar {
+  margin-bottom: 10px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+
+  background: #2a2a2a;
+  padding: 10px;
+
+  border-bottom: 3px solid #444;
+}
+
+.topbar h2 {
+  text-align: center;
+}
+
+.buttons {
+  width: 100%;
+  max-width: 700px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 10px 0;
+}
+
+.search {
+  width: 100%;
+  max-width: 700px;
+  display: block;
+  margin-top: 50px;
+  margin: 10px auto;
+}
+
+.toggles {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin: 10px 0;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.toggles label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  margin-left: 25px;
+  margin-right: 30px;
+}
+
+.toggleItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.toggleItem span {
+  white-space: nowrap;
+}
+
+.toggleItem input {
+  margin: 0;
+}
+
+.sectionDivider {
+  border-top: 3px solid #555;
+  margin: 4px 0;
+  padding-top: 5px;
+}
+
+details .field:nth-of-type(odd) {
+   background:#2f2f2f; 
+  }
+
+details .field:nth-of-type(even) {
+   background:#262626; 
+  }
+
+select, input { 
+  background:#111; 
+  color:#eee; 
+  border:2px solid #555; 
+  height: 26px;  
+  border-radius:5px; 
+  padding-left:5px; 
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.helpBtn { 
+  margin-left: 2px; 
+  cursor:pointer; 
+  background:#555; 
+  border-radius:50%; 
+  width:20px; 
+  height:20px; 
+  display:flex; 
+  align-items:center; 
+  justify-content:center;
+}
+
+.helpOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.helpBox {
+  background: #2a2a2a;
+  padding: 20px;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 650px;
+  color: #eee;
+
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.helpText {
+  line-height: 1.4;
+}
+
+.helpButtonWrap {
+  display: flex;
+  justify-content: center;
+}
+
+.helpBox button {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: none;
+  background: #3a7bd5;
+  color: white;
+  cursor: pointer;
+  align-self: center;
+}
+
+</style>
+</head>
+<body>
+
+<div class="topbar">
+
+  <div id="filePath" style="font-size:12  px; color:#aaa; text-align:left;">
+</div>
+ 
+  <div class="buttons">
+    <button onclick="loadFile()">Load Character</button>
+    <button onclick="saveFile()">Save as</button>
+    <button id="saveBtn" onclick="quickSaveFile()">Save Character</button>
+  </div>
+
+ <div class="toggles">
+  <label><input type="checkbox" id="toggleOx" checked> Include AI Oxtethers</label>
+  <label><input type="checkbox" id="toggleRun" checked> Include Running Units</label>
+</div>
+
+<input type="text" id="search" class="search" placeholder="Search..." oninput="search(this.value)">
+
+</div>
+
+<div id="form"></div>
+
+<script>
+
+async function loadConfig(name) {
+  return await window.electronAPI.loadConfig(name);
+}
+
+let template;
+let helpTexts;
+let fieldPools;
+let optionPools;
+let groupBreaks;
+let numericBooleanFields;
+
+async function init() {
+  try {
+    template = await loadConfig("template.json");
+    helpTexts = await loadConfig("helpTexts.json");
+    fieldPools = await loadConfig("fieldPools.json");
+    optionPools = await loadConfig("optionPools.json");
+    groupBreaks = await loadConfig("groupBreaks.json");
+    numericBooleanFields = await loadConfig("numericBooleanFields.json");
+
+    data = JSON.parse(JSON.stringify(template));
+
+    render();
+  } catch (e) {
+    console.error("INIT FAILED:", e);
+    alert("Failed to load config files. Check console (F12).");
+  }
+}
+
+init();
+
+let searchQuery = "";
+document.getElementById("search").oninput = (e)=>{
+  searchQuery = e.target.value.toLowerCase();
+  render();
+};
+
+let currentFilePath = null;
+
+function showHelp(content) {
+  const overlay = document.createElement("div");
+  overlay.className = "helpOverlay";
+
+  const box = document.createElement("div");
+  box.className = "helpBox";
+
+  const text = document.createElement("div");
+text.className = "helpText";
+text.innerHTML = content;
+
+const close = document.createElement("button");
+close.textContent = "Close";
+close.onclick = () => document.body.removeChild(overlay);
+
+const buttonWrap = document.createElement("div");
+buttonWrap.className = "helpButtonWrap";
+buttonWrap.appendChild(close);
+
+box.appendChild(text);
+box.appendChild(buttonWrap);
+  close.onclick = () => document.body.removeChild(overlay);
+
+  box.appendChild(close);
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+}
+
+function mergeDefaults(target, source) {
+  for (let key in source) {
+    if (target[key] === undefined) {
+      target[key] = JSON.parse(JSON.stringify(source[key]));
+    } else if (
+      typeof source[key] === "object" &&
+      source[key] !== null &&
+      typeof target[key] === "object"
+    ) {
+      mergeDefaults(target[key], source[key]);
+    }
+  }
+}
+
+function createField(key, value, parent) {
+  if (searchQuery && !key.toLowerCase().includes(searchQuery)) return document.createElement("div");
+
+  const div = document.createElement("div");
+  div.className = "field";
+ if (groupBreaks.includes(key)) {
+  div.classList.add("sectionDivider");
+}
+ 
+  const label = document.createElement("span");
+
+  if (searchQuery) {
+    const idx = key.toLowerCase().indexOf(searchQuery);
+    if (idx !== -1) {
+      label.innerHTML = key.substring(0, idx) +
+        "<span style='color:#4da3ff'>" + key.substring(idx, idx + searchQuery.length) + "</span>" +
+        key.substring(idx + searchQuery.length);
+    } else label.textContent = key;
+  } else label.textContent = key;
+
+  div.appendChild(label);
+
+  let input;
+
+if (numericBooleanFields.includes(key)) {
+  input = document.createElement("select");
+
+  ["True", "False"].forEach(v => {
+    const o = document.createElement("option");
+    o.value = v;
+    o.text = v;
+
+    if ((value === 1 && v === "True") || (value === 0 && v === "False")) {
+      o.selected = true;
+    }
+
+    input.appendChild(o);
+  });
+
+  input.onchange = () => {
+    parent[key] = (input.value === "True") ? 1 : 0;
+  };
+}
+
+
+else if (typeof value === "number") {
+  input = document.createElement("input");
+  input.type = "text"; // IMPORTANT: not "number"
+
+  const isDecimal = key === "StrengthMultiplier";
+
+  input.value = value;
+
+  input.oninput = () => {
+    // allow typing freely, just visually prevent letters
+    let val = input.value;
+
+// allow digits, dot, minus
+val = val.replace(/[^0-9.-]/g, "");
+
+// handle minus: only ONE and only at the start
+if (val.includes("-")) {
+  val = val.replace(/-/g, ""); // remove all
+  val = "-" + val;             // add one at front
+}
+
+// decimal handling (only for StrengthMultiplier)
+if (isDecimal) {
+  const firstDot = val.indexOf(".");
+  if (firstDot !== -1) {
+    val =
+      val.substring(0, firstDot + 1) +
+      val.substring(firstDot + 1).replace(/\./g, "");
+  }
+} else {
+  // remove all dots if not decimal field
+  val = val.replace(/\./g, "");
+}
+
+// prevent "-." case → turn into "-0."
+if (val === "-.") {
+  val = "-0.";
+}
+
+// prevent starting with "." → "0."
+if (val.startsWith(".")) {
+  val = "0" + val;
+}
+
+// apply only if changed
+if (val !== input.value) {
+  input.value = val;
+}
+  };
+
+  input.onblur = () => {
+  let val = input.value;
+
+  if (isDecimal) {
+    const num = parseFloat(val);
+    if (!isNaN(num)) {
+      parent[key] = num;
+      input.value = num;
+    } else {
+      input.value = parent[key];
+    }
+  } else {
+    const num = parseInt(val);
+    if (!isNaN(num)) {
+      parent[key] = num;
+      input.value = num;
+    } else {
+      input.value = parent[key];
+    }
+  }
+};
+}
+
+  else if (fieldPools[key]) {
+    input = document.createElement("select");
+    optionPools[fieldPools[key]].forEach(v => {
+      const o = document.createElement("option");
+      o.value = v;
+      o.text = v;
+      if (v === value) o.selected = true;
+      input.appendChild(o);
+    });
+    input.onchange = () => parent[key] = input.value;
+  }
+  else {
+    input = document.createElement("input");
+    input.type = "text";
+    input.value = value;
+    input.onchange = () => parent[key] = input.value;
+  }
+
+  div.appendChild(input);
+
+  const help = document.createElement("div");
+  help.className = "helpBtn";
+  help.textContent = "?";
+  help.onclick = () => showHelp((helpTexts[key] || "No description yet."));
+
+  div.appendChild(help);
+
+  return div;
+}
+
+function buildSection(title, keys, source, container) {
+  const sec = document.createElement("details");
+  if (searchQuery) sec.open = true;
+  const sum = document.createElement("summary");
+  sum.textContent = title;
+  sec.appendChild(sum);
+
+  keys.forEach(k=>{
+    if(source[k]!==undefined){
+      sec.appendChild(createField(k, source[k], source));
+    }
+  });
+
+  container.appendChild(sec);
+}
+
+function buildForm(obj, container) {
+  for (let key in obj) {
+    if (key !== "aic") {
+      if (typeof obj[key] === "object") {
+        const sec = document.createElement("details");
+      if (searchQuery) sec.open = true;
+        const sum = document.createElement("summary");
+        sum.textContent = key; 
+        sec.appendChild(sum);
+        buildForm(obj[key], sec);
+        container.appendChild(sec);
+      } else {
+        container.appendChild(createField(key, obj[key], obj));
+      }
+    }
+  }
+
+  const aic = obj["aic"];
+  if (!aic) return;
+
+  const title = document.createElement("h3");
+  title.textContent = "AIC";
+  title.style.textAlign = "center";
+  container.appendChild(title);
+
+  const keys = Object.keys(aic);
+  const ox = keys.filter(k=>k.startsWith("AIOx"));
+  const run = keys.filter(k=>k.startsWith("RunningUnits"));
+  const filtered = keys.filter(k=>!k.startsWith("AIOx") && !k.startsWith("RunningUnits"));
+
+  buildSection("Economy", filtered.slice(0,68), aic, container);
+  buildSection("Military", filtered.slice(68), aic, container);
+
+if (toggleOx.checked || toggleRun.checked) {
+  const title = document.createElement("h3");
+  title.textContent = "Plugins";
+  title.style.textAlign = "center";
+  container.appendChild(title);
+}
+
+  if(toggleOx.checked) buildSection("AI Oxtethers", ox, aic, container);
+  if(toggleRun.checked) buildSection("Running Units", run, aic, container);
+}
+
+function render(){
+  const c = document.getElementById("form");
+  c.innerHTML = "";
+
+  const title = document.createElement("h3");
+  title.textContent = "Lord";
+  title.style.textAlign = "center";
+  c.appendChild(title);
+
+  buildForm(data, c);
+}
+
+async function loadFile() {
+  const result = await window.electronAPI.openFile();
+  if (!result) return;
+
+  const { content, path } = result;
+
+  try {
+    data = JSON.parse(content);
+  } catch (err) {
+    alert("Invalid JSON");
+    console.error(err);
+    return;
+  }
+
+  mergeDefaults(data, template);
+
+  currentFilePath = path;
+
+  updateFilePathDisplay();
+
+  render();
+}
+
+async function quickSaveFile() {
+  const btn = document.getElementById("saveBtn");
+  const originalText = btn.textContent;
+
+  const output = JSON.stringify(data, null, 2);
+
+  if (!currentFilePath) {
+    await saveFile();
+    return;
+  }
+
+  
+  btn.textContent = "Saving...";
+  btn.disabled = true;
+
+  try {
+    await window.electronAPI.quickSaveFile({
+    path: currentFilePath,
+    content: output
+    });
+
+    
+    btn.textContent = "Saved ✓";
+
+    setTimeout(() => {
+      btn.textContent = originalText;
+      btn.disabled = false;
+    }, 1500);
+
+  } catch (e) {
+    btn.textContent = "Error!";
+    setTimeout(() => {
+      btn.textContent = originalText;
+      btn.disabled = false;
+    }, 2000);
+  }
+}
+
+async function saveFile() {
+  let output = JSON.parse(JSON.stringify(data));
+
+  if(!toggleOx.checked){
+    Object.keys(output.aic).forEach(k=>{
+      if(k.startsWith("AIOx")) delete output.aic[k];
+    });
+  }
+
+  if(!toggleRun.checked){
+    Object.keys(output.aic).forEach(k=>{
+      if(k.startsWith("RunningUnits")) delete output.aic[k];
+    });
+  }
+
+  const content = JSON.stringify(output, null, 2);
+
+  const newPath = await window.electronAPI.saveFile(content);
+
+  if (!newPath) return;
+
+  currentFilePath = newPath;
+  updateFilePathDisplay();
+}
+
+el.style.fontSize = "12px";
+
+function updateFilePathDisplay() {
+  const el = document.getElementById("filePath");
+
+  if (!currentFilePath) {
+    el.textContent = "No file loaded";
+    el.style.fontSize = "12px";
+    return;
+  }
+
+  const parts = currentFilePath.split(/[\\/]/);
+  const separator = currentFilePath.includes("\\") ? "\\" : "/";
+
+  const lastParts = parts.length > 5 ? parts.slice(-5) : parts;
+  const shortPath = parts.length > 5
+    ? "..." + lastParts.join(separator)
+    : currentFilePath;
+
+  el.textContent = shortPath;
+  el.title = currentFilePath;
+  el.style.fontSize = "12px";
+}
+
+toggleOx.onchange=render;
+toggleRun.onchange=render;
+</script>
+
+</body>
+</html>
