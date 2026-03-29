@@ -5,74 +5,22 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AIC Editor</title>
 <style>
+
+* {
+  box-sizing: border-box;
+}
+
 body { 
   font-family: Arial; 
   background:#1e1e1e; 
   color:#eee; 
   margin:20px;}
 
-button { 
-  background:#3a7bd5; 
-  color:white; 
-  order:none; 
-  padding:6px 10px; 
-  border-radius:6px; 
-  margin:10px; cursor:pointer; 
-  min-width: 125px;}
-
-details { 
-  margin-bottom: 10px; 
-  border: 1px solid #444; 
-  border-radius: 10px; 
-  background: #2a2a2a;
-}
-
-/* Title */
-summary { 
-  font-weight: bold; 
-  cursor: pointer; 
-  padding: 10px;
-}
-
-/* Content spacing ONLY when open */
-details > *:not(summary) {
-  padding: 0 10px 0px 10px;
-}
-
-input[type=number]::-webkit-inner-spin-button,
-
-input[type=number]::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-* {
-  box-sizing: border-box;
-}
-
 #form {
   max-width: 900px;
   margin: 0 auto;
   width: 100%;
 }
-
-.field {  
-  display: grid;
-  grid-template-columns: minmax(200px, 1fr) 200px 30px;
-  align-items: center;
-  gap: 8px;
-  margin-top: 0px;
-  max-width: 700px;
-  min-height: 30px; 
-  width: 100%;
-}
-
-.field span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 
 .topbar,
 #form {
@@ -93,8 +41,15 @@ input[type=number]::-webkit-outer-spin-button {
   border-bottom: 3px solid #444;
 }
 
-.topbar h2 {
-  text-align: center;
+button { 
+  background:#3a7bd5; 
+  color:white; 
+  order:none; 
+  padding:6px 10px; 
+  border-radius:6px; 
+  margin:10px; cursor:pointer; 
+  min-width: 125px;
+  min-height: 35px;
 }
 
 .buttons {
@@ -104,14 +59,6 @@ input[type=number]::-webkit-outer-spin-button {
   justify-content: center;
   gap: 10px;
   margin: 10px 0;
-}
-
-.search {
-  width: 100%;
-  max-width: 700px;
-  display: block;
-  margin-top: 50px;
-  margin: 10px auto;
 }
 
 .toggles {
@@ -147,10 +94,30 @@ input[type=number]::-webkit-outer-spin-button {
   margin: 0;
 }
 
-.sectionDivider {
-  border-top: 3px solid #555;
-  margin: 4px 0;
-  padding-top: 5px;
+.search {
+  width: 100%;
+  max-width: 700px;
+  display: block;
+  margin-top: 50px;
+  margin: 10px auto;
+}
+
+.field {  
+  display: grid;
+  grid-template-columns: minmax(200px, 1fr) 200px 30px;
+  align-items: center;
+  gap: 8px;
+  margin-top: 0px;
+  max-width: 700px;
+  min-height: 30px; 
+  width: 100%;
+  border-radius: 5px; 
+}
+
+.field span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 details .field:nth-of-type(odd) {
@@ -160,6 +127,29 @@ details .field:nth-of-type(odd) {
 details .field:nth-of-type(even) {
    background:#262626; 
   }
+
+.sectionDivider {
+  border-top: 3px solid #555;
+  margin: 4px 0;
+  padding-top: 5px;
+}
+
+details { 
+  margin-bottom: 10px; 
+  border: 1px solid #444; 
+  border-radius: 5px; 
+  background: #2a2a2a;
+}
+
+summary { 
+  font-weight: bold; 
+  cursor: pointer; 
+  padding: 10px;
+}
+
+details > *:not(summary) {
+  padding: 0 10px 0px 10px;
+}
 
 select, input { 
   background:#111; 
@@ -182,6 +172,21 @@ select, input {
   display:flex; 
   align-items:center; 
   justify-content:center;
+}
+
+.helpButtonWrap {
+  display: flex;
+  justify-content: center;
+}
+
+.helpBox button {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: none;
+  background: #3a7bd5;
+  color: white;
+  cursor: pointer;
+  align-self: center;
 }
 
 .helpOverlay {
@@ -213,29 +218,15 @@ select, input {
 .helpText {
   line-height: 1.4;
 }
-
-.helpButtonWrap {
-  display: flex;
-  justify-content: center;
-}
-
-.helpBox button {
-  padding: 6px 12px;
-  border-radius: 6px;
-  border: none;
-  background: #3a7bd5;
-  color: white;
-  cursor: pointer;
-  align-self: center;
-}
-
 </style>
 </head>
+
+
 <body>
 
 <div class="topbar">
 
-  <div id="filePath" style="font-size:12  px; color:#aaa; text-align:left;">
+  <div id="filePath" style="font-size:12px; color:#aaa; text-align:left;">
 </div>
  
   <div class="buttons">
@@ -255,8 +246,9 @@ select, input {
 
 <div id="form"></div>
 
-<script>
 
+
+<script>
 async function loadConfig(name) {
   return await window.electronAPI.loadConfig(name);
 }
@@ -306,22 +298,20 @@ function showHelp(content) {
   box.className = "helpBox";
 
   const text = document.createElement("div");
-text.className = "helpText";
-text.innerHTML = content;
+  text.className = "helpText";
+  text.innerHTML = content;
 
-const close = document.createElement("button");
-close.textContent = "Close";
-close.onclick = () => document.body.removeChild(overlay);
+  const close = document.createElement("button");
+  close.textContent = "Close";
 
-const buttonWrap = document.createElement("div");
-buttonWrap.className = "helpButtonWrap";
-buttonWrap.appendChild(close);
+  const buttonWrap = document.createElement("div");
+  buttonWrap.className = "helpButtonWrap";
+  buttonWrap.appendChild(close);
 
-box.appendChild(text);
-box.appendChild(buttonWrap);
+  box.appendChild(text);
+  box.appendChild(buttonWrap);
   close.onclick = () => document.body.removeChild(overlay);
 
-  box.appendChild(close);
   overlay.appendChild(box);
   document.body.appendChild(overlay);
 }
@@ -387,26 +377,23 @@ if (numericBooleanFields.includes(key)) {
 
 else if (typeof value === "number") {
   input = document.createElement("input");
-  input.type = "text"; // IMPORTANT: not "number"
+  input.type = "text";
 
   const isDecimal = key === "StrengthMultiplier";
 
   input.value = value;
 
   input.oninput = () => {
-    // allow typing freely, just visually prevent letters
+
     let val = input.value;
 
-// allow digits, dot, minus
 val = val.replace(/[^0-9.-]/g, "");
 
-// handle minus: only ONE and only at the start
 if (val.includes("-")) {
-  val = val.replace(/-/g, ""); // remove all
-  val = "-" + val;             // add one at front
+  val = val.replace(/-/g, "");
+  val = "-" + val; 
 }
 
-// decimal handling (only for StrengthMultiplier)
 if (isDecimal) {
   const firstDot = val.indexOf(".");
   if (firstDot !== -1) {
@@ -415,21 +402,18 @@ if (isDecimal) {
       val.substring(firstDot + 1).replace(/\./g, "");
   }
 } else {
-  // remove all dots if not decimal field
+
   val = val.replace(/\./g, "");
 }
 
-// prevent "-." case → turn into "-0."
 if (val === "-.") {
   val = "-0.";
 }
 
-// prevent starting with "." → "0."
 if (val.startsWith(".")) {
   val = "0" + val;
 }
 
-// apply only if changed
 if (val !== input.value) {
   input.value = val;
 }
@@ -569,7 +553,6 @@ async function loadFile() {
   try {
     data = JSON.parse(content);
 
-// 🔍 detect unknown keys BEFORE modifying data
 const unknownKeys = findUnknownKeys(template, data);
 
 if (unknownKeys.length > 0) {
@@ -579,10 +562,7 @@ if (unknownKeys.length > 0) {
   );
 }
 
-// 🔄 normalize + fix structure
 data = renameKeysPreserveOrder(data);
-
-mergeDefaults(data, template);
 
 data = applyTemplateOrder(template, data);
 
@@ -611,12 +591,10 @@ function renameKeysPreserveOrder(obj) {
 
     let value = obj[key];
 
-    // recurse into nested objects
     if (typeof value === "object" && value !== null) {
       value = renameKeysPreserveOrder(value);
     }
 
-    // only assign if not already present (avoid overwrite)
     if (!(newKey in newObj)) {
       newObj[newKey] = value;
     }
@@ -632,7 +610,6 @@ function applyTemplateOrder(template, data) {
 
   const result = {};
 
-  // First: follow template order
   for (const key of Object.keys(template)) {
     if (data && key in data) {
       if (
@@ -644,12 +621,10 @@ function applyTemplateOrder(template, data) {
         result[key] = data[key];
       }
     } else {
-      // fallback to template default
       result[key] = JSON.parse(JSON.stringify(template[key]));
     }
   }
 
-  // Then: append extra keys not in template (optional but useful)
   for (const key of Object.keys(data || {})) {
     if (!(key in result)) {
       result[key] = data[key];
@@ -674,7 +649,6 @@ function findUnknownKeys(template, data, path = "") {
       unknown.push(currentPath);
     }
 
-    // recurse if both sides are objects
     if (
       typeof data[key] === "object" &&
       data[key] !== null
@@ -687,11 +661,29 @@ function findUnknownKeys(template, data, path = "") {
   return unknown;
 }
 
+function prepareOutputData() {
+  let output = JSON.parse(JSON.stringify(data));
+
+  if (!toggleOx.checked) {
+    Object.keys(output.aic).forEach(k => {
+      if (k.startsWith("AIOx")) delete output.aic[k];
+    });
+  }
+
+  if (!toggleRun.checked) {
+    Object.keys(output.aic).forEach(k => {
+      if (k.startsWith("RunningUnits")) delete output.aic[k];
+    });
+  }
+
+  return output;
+}
+
 async function quickSaveFile() {
   const btn = document.getElementById("saveBtn");
   const originalText = btn.textContent;
 
-  const output = JSON.stringify(data, null, 2);
+  const output = JSON.stringify(prepareOutputData(), null, 2);
 
   if (!currentFilePath) {
     await saveFile();
@@ -726,20 +718,7 @@ async function quickSaveFile() {
 }
 
 async function saveFile() {
-  let output = JSON.parse(JSON.stringify(data));
-
-  if(!toggleOx.checked){
-    Object.keys(output.aic).forEach(k=>{
-      if(k.startsWith("AIOx")) delete output.aic[k];
-    });
-  }
-
-  if(!toggleRun.checked){
-    Object.keys(output.aic).forEach(k=>{
-      if(k.startsWith("RunningUnits")) delete output.aic[k];
-    });
-  }
-
+  const output = prepareOutputData();
   const content = JSON.stringify(output, null, 2);
 
   const newPath = await window.electronAPI.saveFile(content);
@@ -749,8 +728,6 @@ async function saveFile() {
   currentFilePath = newPath;
   updateFilePathDisplay();
 }
-
-el.style.fontSize = "12px";
 
 function updateFilePathDisplay() {
   const el = document.getElementById("filePath");
@@ -777,6 +754,5 @@ function updateFilePathDisplay() {
 toggleOx.onchange=render;
 toggleRun.onchange=render;
 </script>
-
 </body>
 </html>
