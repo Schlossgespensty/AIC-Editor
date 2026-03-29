@@ -5,11 +5,42 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AIC Editor</title>
 <style>
-body { font-family: Arial; background:#1e1e1e; color:#eee; margin:20px;}
-button { background:#3a7bd5; color:white; border:none; padding:6px 10px; border-radius:6px; margin:10px; cursor:pointer; min-width: 125px;}
-details { margin-bottom:10px; border:1px solid #444; border-radius:10px; padding:10px; background:#2a2a2a;}
-summary { font-weight:bold; cursor:pointer;}
+body { 
+  font-family: Arial; 
+  background:#1e1e1e; 
+  color:#eee; 
+  margin:20px;}
+
+button { 
+  background:#3a7bd5; 
+  color:white; 
+  order:none; 
+  padding:6px 10px; 
+  border-radius:6px; 
+  margin:10px; cursor:pointer; 
+  min-width: 125px;}
+
+details { 
+  margin-bottom: 10px; 
+  border: 1px solid #444; 
+  border-radius: 10px; 
+  background: #2a2a2a;
+}
+
+/* Title */
+summary { 
+  font-weight: bold; 
+  cursor: pointer; 
+  padding: 10px;
+}
+
+/* Content spacing ONLY when open */
+details > *:not(summary) {
+  padding: 0 10px 0px 10px;
+}
+
 input[type=number]::-webkit-inner-spin-button,
+
 input[type=number]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
@@ -236,6 +267,7 @@ let fieldPools;
 let optionPools;
 let groupBreaks;
 let numericBooleanFields;
+let legacyKeyMap;
 
 async function init() {
   try {
@@ -245,13 +277,14 @@ async function init() {
     optionPools = await loadConfig("optionPools.json");
     groupBreaks = await loadConfig("groupBreaks.json");
     numericBooleanFields = await loadConfig("numericBooleanFields.json");
+    legacyKeyMap = await loadConfig("legacyKeyMap.json");
 
     data = JSON.parse(JSON.stringify(template));
 
     render();
   } catch (e) {
     console.error("INIT FAILED:", e);
-    alert("Failed to load config files. Check console (F12).");
+    alert("Failed to load config files.");
   }
 }
 
@@ -535,6 +568,24 @@ async function loadFile() {
 
   try {
     data = JSON.parse(content);
+
+// 🔍 detect unknown keys BEFORE modifying data
+const unknownKeys = findUnknownKeys(template, data);
+
+if (unknownKeys.length > 0) {
+  alert(
+    "Unknown parameters found:\n\n" +
+    unknownKeys.join("\n")
+  );
+}
+
+// 🔄 normalize + fix structure
+data = renameKeysPreserveOrder(data);
+
+mergeDefaults(data, template);
+
+data = applyTemplateOrder(template, data);
+
   } catch (err) {
     alert("Invalid JSON");
     console.error(err);
@@ -548,6 +599,92 @@ async function loadFile() {
   updateFilePathDisplay();
 
   render();
+}
+
+function renameKeysPreserveOrder(obj) {
+  if (!obj || typeof obj !== "object") return obj;
+
+  const newObj = {};
+
+  for (const key of Object.keys(obj)) {
+    let newKey = legacyKeyMap[key] || key;
+
+    let value = obj[key];
+
+    // recurse into nested objects
+    if (typeof value === "object" && value !== null) {
+      value = renameKeysPreserveOrder(value);
+    }
+
+    // only assign if not already present (avoid overwrite)
+    if (!(newKey in newObj)) {
+      newObj[newKey] = value;
+    }
+  }
+
+  return newObj;
+}
+
+function applyTemplateOrder(template, data) {
+  if (typeof template !== "object" || template === null) {
+    return data;
+  }
+
+  const result = {};
+
+  // First: follow template order
+  for (const key of Object.keys(template)) {
+    if (data && key in data) {
+      if (
+        typeof template[key] === "object" &&
+        template[key] !== null
+      ) {
+        result[key] = applyTemplateOrder(template[key], data[key]);
+      } else {
+        result[key] = data[key];
+      }
+    } else {
+      // fallback to template default
+      result[key] = JSON.parse(JSON.stringify(template[key]));
+    }
+  }
+
+  // Then: append extra keys not in template (optional but useful)
+  for (const key of Object.keys(data || {})) {
+    if (!(key in result)) {
+      result[key] = data[key];
+    }
+  }
+
+  return result;
+}
+
+function findUnknownKeys(template, data, path = "") {
+  let unknown = [];
+
+  if (!data || typeof data !== "object") return unknown;
+
+  for (const key of Object.keys(data)) {
+    const currentPath = path ? `${path}.${key}` : key;
+
+    const isInTemplate = template && key in template;
+    const isLegacyKey = key in legacyKeyMap;
+
+    if (!isInTemplate && !isLegacyKey) {
+      unknown.push(currentPath);
+    }
+
+    // recurse if both sides are objects
+    if (
+      typeof data[key] === "object" &&
+      data[key] !== null
+    ) {
+      const subTemplate = template ? template[key] : undefined;
+      unknown.push(...findUnknownKeys(subTemplate, data[key], currentPath));
+    }
+  }
+
+  return unknown;
 }
 
 async function quickSaveFile() {
