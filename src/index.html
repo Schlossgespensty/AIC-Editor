@@ -11,10 +11,11 @@
 }
 
 body { 
-  font-family: Arial; 
+  font-family: monospace, sans-serif;
+  font-size: medium;
   background:#1e1e1e; 
   color:#eee; 
-  margin:20px;}
+  min-width: 500px;}
 
 #form {
   max-width: 900px;
@@ -44,13 +45,16 @@ body {
 button { 
   background:#3a7bd5; 
   color:white; 
-  order:none; 
-  padding:6px 10px; 
-  border-radius:6px; 
-  margin:6px; cursor:pointer; 
-  min-width: 125px;
-  min-height: 35px;
-  font-size: medium;
+  border:none; 
+  padding: 6px 10px; 
+  border-radius: 6px; 
+  margin-top: 6px; 
+  margin-inline: 10px;
+  cursor:pointer; 
+  min-width: 140px;
+  min-height: 32px;
+  font-family: monospace, sans-serif;
+  font-size: 15px;
 }
 
 .buttons {
@@ -65,7 +69,7 @@ button {
 .toggles {
   display: flex;
   justify-content: center;
-  gap: 30px;
+  column-gap: 35px;
   margin: 10px 0;
   width: 100%;
   flex-wrap: wrap;
@@ -78,7 +82,8 @@ button {
   white-space: nowrap;
   margin-left: 25px;
   margin-right: 30px;
-  font-size: medium;
+  font-family: monospace, sans-serif;
+  font-size: 15px;
 }
 
 .toggleItem {
@@ -102,6 +107,7 @@ button {
   display: block;
   margin-top: 50px;
   margin: 10px auto;
+  font-size: 12px;
 }
 
 .field {  
@@ -206,18 +212,12 @@ select, input {
   padding: 10px;
   border-radius: 10px;
   font: message-box;
-  font-family: Calibri;
+  font-family: monospace, sans-serif;
+  font-size: 15px;
 }
 
 .helpBox button {
-  padding: 6px 12px;
-  border-radius: 6px;
   border: none;
-  background: #3a7bd5;
-  color: white;
-  cursor: pointer;
-  align-self: center;
-  font-size: medium;
 }
 
 .helpOverlay {
@@ -716,7 +716,7 @@ async function quickSaveFile() {
     });
 
     
-    btn.textContent = "Saved ✓";
+    btn.textContent = "Saved!";
 
     setTimeout(() => {
       btn.textContent = originalText;

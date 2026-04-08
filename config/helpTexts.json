@@ -240,7 +240,7 @@
 
 
 "MinimumGoodsRequiredAfterTrade":
-"On resource request of a player: the amount of a resource that needs to be left over after the trade for the AI to agree to it.<br>Otherwise the AI will decline the trade.",
+"The amount of a resource that the AI needs to have left over after a trade with the player, to agree to it.<br>Otherwise the AI will decline the trade.",
 
 
 "DoubleRationsFoodThreshold":
@@ -372,43 +372,43 @@
 
 
 "RecruitProbDefDefault":
-"The probability that the AI recruits defensive units in the default state.",
+"The probability that the AI recruits defensive units in the default state.<br><br><br><br>Weak: almost never active, mostly when close to death.<br><br>Default: mostly the first few years of a game.<br><br>Strong: active the most.<br>This state is often already reached if population and unit count >40.",
 
 
 "RecruitProbDefWeak":
-"The probability the AI to recruit defensive units in the weak State.",
+"The probability that the AI recruits defensive units in the weak state.<br><br><br><br>Weak: almost never active, mostly when close to death.<br><br>Default: mostly the first few years of a game.<br><br>Strong: active the most.<br>This state is often already reached if population and unit count >40.",
 
 
 "RecruitProbDefStrong":
-"The probability the AI to recruit defensive units in the strong State.",
+"The probability that the AI recruits defensive units in the strong state.<br><br><br><br>Weak: almost never active, mostly when close to death.<br><br>Default: mostly the first few years of a game.<br><br>Strong: active the most.<br>This state is often already reached if population and unit count >40.",
 
 
 "RecruitProbRaidDefault":
-"The probability that the AI recruits raid units in the default State.",
+"The probability that the AI recruits raid units in the default state.<br><br><br><br>Weak: almost never active, mostly when close to death.<br><br>Default: mostly the first few years of a game.<br><br>Strong: active the most.<br>This state is often already reached if population and unit count >40.",
 
 
 "RecruitProbRaidWeak":
-"The probability that the AI recruits raid units in the weak State.",
+"The probability that the AI recruits raid units in the weak state.<br><br><br><br>Weak: almost never active, mostly when close to death.<br><br>Default: mostly the first few years of a game.<br><br>Strong: active the most.<br>This state is often already reached if population and unit count >40.",
 
 
 "RecruitProbRaidStrong":
-"The probability that the AI recruits raid units in the strong State.",
+"The probability that the AI recruits raid units in the strong state.<br><br><br><br>Weak: almost never active, mostly when close to death.<br><br>Default: mostly the first few years of a game.<br><br>Strong: active the most.<br>This state is often already reached if population and unit count >40.",
 
 
 "RecruitProbAttackDefault":
-"The probability that the AI recruits attack units in the default State.",
+"The probability that the AI recruits attack units in the default state.<br><br><br><br>Weak: almost never active, mostly when close to death.<br><br>Default: mostly the first few years of a game.<br><br>Strong: active the most.<br>This state is often already reached if population and unit count >40.",
 
 
 "RecruitProbAttackWeak":
-"The probability that the AI recruits attack units in the weak State.",
+"The probability that the AI recruits attack units in the weak state.<br><br><br><br>Weak: almost never active, mostly when close to death.<br><br>Default: mostly the first few years of a game.<br><br>Strong: active the most.<br>This state is often already reached if population and unit count >40.",
 
 
 "RecruitProbAttackStrong":
-"The probability that the AI recruits attack units in the strong State.",
+"The probability that the AI recruits attack units in the strong state.<br><br><br><br>Weak: almost never active, mostly when close to death.<br><br>Default: mostly the first few years of a game.<br><br>Strong: active the most.<br>This state is often already reached if population and unit count >40.",
 
 
 "SortieUnitRangedMin":
-"The minimum number of ranged sortie units the AI send.",
+"The minimum number of ranged sortie units the AI send.<br><br><br><br>Weak: almost never active, mostly when close to death<br><br>Default: mostly the first few years of a game<br><br>Strong: active the most.<br>This state is often already reached if population and unit count >40",
 
 
 "SortieUnitRanged":
@@ -432,15 +432,15 @@
 
 
 "RecruitInterval":
-"The amount of time the AI waits before recruiting the next unit while in the default state.<br>1 is the fastest.",
+"The amount of time the AI waits before recruiting the next unit while in the default state.<br>1 is the fastest.<br><br><br><br>Weak: almost never active, mostly when close to death.<br><br>Default: mostly the first few years of a game.<br><br>Strong: active the most.<br>This state is often already reached if population and unit count >40.",
 
 
 "RecruitIntervalWeak":
-"The amount of time the AI waits before recruiting the next unit while in the weak state.<br>1 is the fastest.",
+"The amount of time the AI waits before recruiting the next unit while in the weak state.<br>1 is the fastest.<br><br><br><br>Weak: almost never active, mostly when close to death.<br><br>Default: mostly the first few years of a game.<br><br>Strong: active the most.<br>This state is often already reached if population and unit count >40.",
 
 
 "RecruitIntervalStrong":
-"The amount of time the AI waits before recruiting the next unit while in the strong state.<br>1 is the fastest.",
+"The amount of time the AI waits before recruiting the next unit while in the strong state.<br>1 is the fastest.<br><br><br><br>Weak: almost never active, mostly when close to death.<br><br>Default: mostly the first few years of a game.<br><br>Strong: active the most.<br>This state is often already reached if population and unit count >40.",
 
 
 "DefTotal":
@@ -795,3 +795,4 @@
 "If true, slaves will always run, even when grouped with slower units.<br>If false they will match the speed of the slowest unit in their group (like Vanilla)"
 }
 
+    
