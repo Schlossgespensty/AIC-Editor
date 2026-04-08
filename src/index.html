@@ -130,13 +130,8 @@ button {
   white-space: nowrap;
 }
 
-details .field:nth-of-type(odd) {
-   background:#2f2f2f; 
-  }
-
-details .field:nth-of-type(even) {
-   background:#262626; 
-  }
+.field:nth-of-type(odd) { background:#2f2f2f; }
+.field:nth-of-type(even) { background:#262626; }
 
 .sectionDivider {
   border-top: 3px solid #555;
@@ -245,6 +240,8 @@ select, input {
 </div>
  
   <div class="buttons">
+    <button onclick="expandAll()">Expand All</button>
+    <button onclick="collapseAll()">Collapse All</button>
     <button onclick="loadFile()">Load Character</button>
     <button onclick="saveFile()">Save as</button>
     <button id="saveBtn" onclick="quickSaveFile()">Save Character</button>
@@ -263,7 +260,7 @@ select, input {
 
 
 
-<script>
+ <script>
 async function loadConfig(name) {
   return await window.electronAPI.loadConfig(name);
 }
@@ -275,6 +272,17 @@ let optionPools;
 let groupBreaks;
 let numericBooleanFields;
 let legacyKeyMap;
+
+const sections = {
+  "Lord": ["lord.StrengthMultiplier"],
+  "Normal": ["startTroops.normal.ArabArcher"],
+  "Cursader": ["startTroops.crusader.ArabArcher"],
+  "Deathmatch": ["startTroops.deathmatch.ArabArcher"],
+  "Economy": ["aic.WallDecoration"],
+  "Military": ["aic.DefWallPatrolRallyTime"],
+  "AI OxTethers": ["aic.AIOxTethers_DisableInitialOxTether"],
+  "Running Units": ["aic.RunningUnits_Macemen"]
+};
 
 async function init() {
   try {
@@ -346,11 +354,11 @@ function mergeDefaults(target, source) {
 }
 
 function createField(key, value, parent) {
-  if (searchQuery && !key.toLowerCase().includes(searchQuery)) return document.createElement("div");
+  if (searchQuery && !key.toLowerCase().includes(searchQuery)) return null;
 
   const div = document.createElement("div");
   div.className = "field";
- if (groupBreaks.includes(key)) {
+ if (!searchQuery && groupBreaks.includes(key)) {
   div.classList.add("sectionDivider");
 }
  
@@ -503,48 +511,80 @@ function buildSection(title, keys, source, container) {
   container.appendChild(sec);
 }
 
-function buildForm(obj, container) {
+function flattenObject(obj, result = [], parent = null, path = "") {
   for (let key in obj) {
-    if (key !== "aic") {
-      if (typeof obj[key] === "object") {
-        const sec = document.createElement("details");
-      if (searchQuery) sec.open = true;
-        const sum = document.createElement("summary");
-        sum.textContent = key; 
-        sec.appendChild(sum);
-        buildForm(obj[key], sec);
-        container.appendChild(sec);
-      } else {
-        container.appendChild(createField(key, obj[key], obj));
-      }
+    if (key === "aic") continue;
+
+    const value = obj[key];
+    const currentPath = path ? `${path}.${key}` : key;
+
+    if (typeof value === "object" && value !== null) {
+      flattenObject(value, result, value, currentPath);
+    } else {
+      result.push({
+        key,
+        value,
+        parent,
+        path: currentPath // 🔥 THIS is the important part
+      });
     }
   }
 
-  const aic = obj["aic"];
-  if (!aic) return;
+  if (obj.aic) {
+    flattenObject(obj.aic, result, obj.aic, path ? `${path}.aic` : "aic");
+  }
 
-  const title = document.createElement("h3");
-  title.textContent = "AIC";
-  title.style.textAlign = "center";
-  container.appendChild(title);
-
-  const keys = Object.keys(aic);
-  const ox = keys.filter(k=>k.startsWith("AIOx"));
-  const run = keys.filter(k=>k.startsWith("RunningUnits"));
-  const filtered = keys.filter(k=>!k.startsWith("AIOx") && !k.startsWith("RunningUnits"));
-
-  buildSection("Economy", filtered.slice(0,68), aic, container);
-  buildSection("Military", filtered.slice(68), aic, container);
-
-if (toggleOx.checked || toggleRun.checked) {
-  const title = document.createElement("h3");
-  title.textContent = "Plugins";
-  title.style.textAlign = "center";
-  container.appendChild(title);
+  return result;
 }
 
-  if(toggleOx.checked) buildSection("AI Oxtethers", ox, aic, container);
-  if(toggleRun.checked) buildSection("Running Units", run, aic, container);
+function buildForm(obj, container) {
+  const flat = flattenObject(obj);
+
+  let currentSection = null;
+
+  function startSection(title) {
+    const sec = document.createElement("details");
+    sec.open = true;
+
+    const sum = document.createElement("summary");
+    sum.textContent = title;
+
+    sec.appendChild(sum);
+    container.appendChild(sec);
+
+    return sec;
+  }
+
+  flat.forEach(({ key, value, parent, path }) => {  
+
+    if (!toggleOx.checked && path.includes("AIOx")) return;
+    if (!toggleRun.checked && path.includes("RunningUnits")) return;
+    // 🔥 SECTION START
+    const sectionName = Object.keys(sections || {}).find(s =>
+    sections[s].includes(path)
+    );
+
+    if (sectionName && (!currentSection || currentSection.dataset.name !== sectionName)) {
+      currentSection = startSection(sectionName);
+      currentSection.dataset.name = sectionName;
+    }
+
+    // create field
+    const field = createField(key, value, parent);
+    if (!field) return;
+
+    // 🔹 groupBreaks stay EXACTLY as you had them
+    if (groupBreaks.includes(key)) {
+      field.classList.add("sectionDivider");
+    }
+
+    // append
+    if (currentSection) {
+      currentSection.appendChild(field);
+    } else {
+      container.appendChild(field);
+    }
+  });
 }
 
 function render(){
@@ -557,6 +597,18 @@ function render(){
   c.appendChild(title);
 
   buildForm(data, c);
+}
+
+function expandAll() {
+  document.querySelectorAll("#form details").forEach(d => {
+    d.open = true;
+  });
+}
+
+function collapseAll() {
+  document.querySelectorAll("#form details").forEach(d => {
+    d.open = false;
+  });
 }
 
 async function loadFile() {
