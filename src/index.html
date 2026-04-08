@@ -47,9 +47,10 @@ button {
   order:none; 
   padding:6px 10px; 
   border-radius:6px; 
-  margin:10px; cursor:pointer; 
+  margin:6px; cursor:pointer; 
   min-width: 125px;
   min-height: 35px;
+  font-size: medium;
 }
 
 .buttons {
@@ -77,6 +78,7 @@ button {
   white-space: nowrap;
   margin-left: 25px;
   margin-right: 30px;
+  font-size: medium;
 }
 
 .toggleItem {
@@ -109,9 +111,11 @@ button {
   gap: 8px;
   margin-top: 0px;
   max-width: 700px;
-  min-height: 30px; 
+  min-height: 26px; 
   width: 100%;
   border-radius: 5px; 
+  font-family: monospace;
+  font-size: 15px;
 }
 
 .field span {
@@ -130,7 +134,7 @@ details .field:nth-of-type(even) {
 
 .sectionDivider {
   border-top: 3px solid #555;
-  margin: 4px 0;
+  margin-top: 4px;
   padding-top: 5px;
 }
 
@@ -155,11 +159,14 @@ select, input {
   background:#111; 
   color:#eee; 
   border:2px solid #555; 
-  height: 26px;  
+  height: 23px;  
   border-radius:5px; 
   padding-left:5px; 
   width: 100%;
   box-sizing: border-box;
+  font-family: monospace;
+  font-size: 15px;
+  vertical-align: middle;
 }
 
 .helpBtn { 
@@ -172,11 +179,34 @@ select, input {
   display:flex; 
   align-items:center; 
   justify-content:center;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .helpButtonWrap {
   display: flex;
   justify-content: center;
+}
+
+.helpBox {
+  background: #262626;
+  padding: 15px;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 650px;
+  color: #eee;
+
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.helpText {
+  line-height: 1.4;
+  background: #2f2f2f;
+  padding: 10px;
+  border-radius: 10px;
+  font: message-box;
+  font-family: Calibri;
 }
 
 .helpBox button {
@@ -187,6 +217,7 @@ select, input {
   color: white;
   cursor: pointer;
   align-self: center;
+  font-size: medium;
 }
 
 .helpOverlay {
@@ -202,22 +233,6 @@ select, input {
   z-index: 1000;
 }
 
-.helpBox {
-  background: #2a2a2a;
-  padding: 20px;
-  border-radius: 10px;
-  width: 90%;
-  max-width: 650px;
-  color: #eee;
-
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.helpText {
-  line-height: 1.4;
-}
 </style>
 </head>
 
