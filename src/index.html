@@ -49,28 +49,53 @@ body {
 }
 
 sectionButton { 
-  background:none; 
-  color:white; 
+  background: #444;
+  color: white;
+  padding: 1px 6px;
+  border-radius: 4px;
+  min-width: 115px;
   border:none;
   cursor:pointer;
   font-family: monospace, sans-serif;
   font-size: 12px;
 }
 
-.sectionButton1 {
+.sectionButtons {
   display: flex;
   justify-content: left;
+  text-align: center;
   margin-inline: 5px;
   margin-top: 2px;
   margin-bottom: 2px;
+  gap: 10px;
 }
 
-.sectionButton2 {
+.templateButtons {
   display: flex;
   justify-content: right;
+  text-align: center;
   margin-inline: 5px;
   margin-top: 2px;
   margin-bottom: 2px;
+  gap: 10px;
+}
+
+.templateBtn {
+  all: unset;
+  cursor: pointer;
+  font-family: monospace, sans-serif;
+  font-size: 12px;
+  color: white;
+  padding: 1px 6px;
+  border-radius: 4px;
+  min-width: 115px;
+  border:none;
+  background:none; 
+}
+
+button.active {
+  background: #444;
+  color: white;
 }
 
 button { 
@@ -285,13 +310,15 @@ select, input {
 <input type="text" id="search" class="search" placeholder="Search..." oninput="search(this.value)">
 
 <div class="sectionButtonsWrapper">
-  <div class="sectionButton1">
+  <div class="sectionButtons">
     <sectionButton onclick="expandAll()">Expand All</sectionButton>
-  </div>
-
-  <div class="sectionButton2">
     <sectionButton onclick="collapseAll()">Collapse All</sectionButton>
   </div>
+
+  <div class="templateButtons">
+      <button id="btnStandard" class="templateBtn" onclick="standardTemplate()">Standard Template</button>
+      <button id="btnOrdered" class="templateBtn" onclick="orderedTemplate()">Ordered Template</button>
+  </div> 
 </div>
 
 </div>
@@ -311,14 +338,24 @@ async function loadConfig(name) {
   return await window.electronAPI.loadConfig(name);
 }
 
-let template;
+
 let helpTexts;
 let fieldPools;
 let optionPools;
-let groupBreaks;
 let numericBooleanFields;
 let legacyKeyMap;
-let sections
+
+let template;
+let groupBreaks;
+let sections;
+
+let templateOrdered;
+let groupBreaksOrdered;
+let sectionsOrdered
+
+let activeTemplate;
+let activeGroupBreaks;
+let activeSections;
 
 async function init() {
   try {
@@ -330,8 +367,17 @@ async function init() {
     numericBooleanFields = await loadConfig("numericBooleanFields.json");
     legacyKeyMap = await loadConfig("legacyKeyMap.json");
     sections = await loadConfig("sections.json");
+    templateOrdered = await loadConfig("templateOrdered.json");
+    groupBreaksOrdered = await loadConfig("groupBreaksOrdered.json");
+    sectionsOrdered = await loadConfig("sectionsOrdered.json");
 
     data = JSON.parse(JSON.stringify(template));
+
+    activeTemplate = template;
+    activeGroupBreaks = groupBreaks;
+    activeSections = sections;
+
+    setActiveTemplateButton("standard");
 
     render();
   } catch (e) {
@@ -340,7 +386,45 @@ async function init() {
   }
 }
 
+
+
 init();
+
+function standardTemplate() {
+  activeTemplate = template;
+  activeGroupBreaks = groupBreaks;
+  activeSections = sections;
+
+  setActiveTemplateButton("standard");
+
+  data = applyTemplateOrder(activeTemplate, data);
+  render();
+}
+
+function orderedTemplate() {
+  activeTemplate = templateOrdered;
+  activeGroupBreaks = groupBreaksOrdered;
+  activeSections = sectionsOrdered;
+
+  setActiveTemplateButton("ordered");
+
+  data = applyTemplateOrder(activeTemplate, data);
+  render();
+}
+
+function setActiveTemplateButton(type) {
+  const standardBtn = document.getElementById("btnStandard");
+  const orderedBtn = document.getElementById("btnOrdered");
+
+  standardBtn.classList.remove("active");
+  orderedBtn.classList.remove("active");
+
+  if (type === "standard") {
+    standardBtn.classList.add("active");
+  } else {
+    orderedBtn.classList.add("active");
+  }
+}
 
 let searchQuery = "";
 document.getElementById("search").oninput = (e)=>{
@@ -395,7 +479,7 @@ function createField(key, value, parent) {
 
   const div = document.createElement("div");
   div.className = "field";
- if (!searchQuery && groupBreaks.includes(key)) {
+ if (!searchQuery && activeGroupBreaks.includes(key)) {
   div.classList.add("sectionDivider");
 }
  
@@ -597,8 +681,8 @@ function buildForm(obj, container) {
     if (!toggleOx.checked && path.includes("AIOx")) return;
     if (!toggleRun.checked && path.includes("RunningUnits")) return;
 
-    const sectionName = Object.keys(sections || {}).find(s =>
-    sections[s].includes(path)
+    const sectionName = Object.keys(activeSections || {}).find(s =>
+    activeSections[s].includes(path)
     );
 
     if (sectionName && (!currentSection || currentSection.dataset.name !== sectionName)) {
@@ -609,7 +693,7 @@ function buildForm(obj, container) {
     const field = createField(key, value, parent);
     if (!field) return;
 
-    if (groupBreaks.includes(key)) {
+    if (activeGroupBreaks.includes(key)) {
       field.classList.add("sectionDivider");
     }
 

@@ -204,7 +204,7 @@
 
 
 "MaxFood":
-"The maximum amount stored of apples, cheese, meat, bread, wheat and hop (+ResourceVariance on top).<br><br>Amount chosen is per type, NOT combined.",
+"The maximum amount stored of apples, cheese, meat, bread and wheat (+ResourceVariance on top).<br><br>Amount chosen is per type, NOT combined.",
 
 
 "MinimumApples":
