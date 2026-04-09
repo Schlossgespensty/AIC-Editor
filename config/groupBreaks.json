@@ -11,6 +11,8 @@
   "SellResource01",
   "Unknown072",
   "RecruitProbDefDefault",
+  "RecruitProbRaidDefault",
+  "RecruitProbAttackDefault",
   "SortieUnitRangedMin",
   "DefTotal",
   "RaidUnitsBase",
