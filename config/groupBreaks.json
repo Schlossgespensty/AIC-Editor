@@ -1,4 +1,7 @@
 [
+  "StrengthMultiplier",
+  "ArabArcher",
+  "WallDecoration",
   "Unknown001",
   "CriticalPopularity",
   "Unknown011",
@@ -9,6 +12,7 @@
   "MaxWood",
   "BlacksmithSetting",
   "SellResource01",
+  "DefWallPatrolRallyTime",
   "Unknown072",
   "RecruitProbDefDefault",
   "RecruitProbRaidDefault",
@@ -19,5 +23,7 @@
   "HarassingSiegeEngine1",
   "AttForceBase",
   "SiegeEngine1",
-  "AttDiggingUnit"
+  "AttDiggingUnit",
+  "AIOxTethers_DisableInitialOxTether",
+  "RunningUnits_Macemen"
 ]

@@ -256,7 +256,7 @@
 
 
 "MaxResourceOther":
-"The maximum amount stored of iron, pitch and flour (+ResourceVariance on top).<br><br>Amount chosen is per type, not combined.",
+"The maximum amount stored of iron, pitch, hop and flour (+ResourceVariance on top).<br><br>Amount chosen is per type, not combined.",
 
 
 "MaxEquipment":

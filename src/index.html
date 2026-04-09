@@ -207,7 +207,8 @@ details {
 summary { 
   font-weight: bold; 
   cursor: pointer; 
-  padding: 10px;
+  padding: 6px;
+  padding-inline: 10px;
   font-size: 17px;
 }
 
@@ -732,7 +733,7 @@ async function loadFile() {
   try {
     data = JSON.parse(content);
 
-const unknownKeys = findUnknownKeys(template, data);
+const unknownKeys = findUnknownKeys(activeTemplate, data);
 
 if (unknownKeys.length > 0) {
   alert(
@@ -743,7 +744,7 @@ if (unknownKeys.length > 0) {
 
 data = renameKeysPreserveOrder(data);
 
-data = applyTemplateOrder(template, data);
+data = applyTemplateOrder(activeTemplate, data);
 
   } catch (err) {
     alert("Invalid JSON");
@@ -751,7 +752,7 @@ data = applyTemplateOrder(template, data);
     return;
   }
 
-  mergeDefaults(data, template);
+  mergeDefaults(data, activeTemplate);
 
   currentFilePath = path;
 
@@ -782,25 +783,25 @@ function renameKeysPreserveOrder(obj) {
   return newObj;
 }
 
-function applyTemplateOrder(template, data) {
-  if (typeof template !== "object" || template === null) {
+function applyTemplateOrder(activeTemplate, data) {
+  if (typeof activeTemplate !== "object" || activeTemplate === null) {
     return data;
   }
 
   const result = {};
 
-  for (const key of Object.keys(template)) {
+  for (const key of Object.keys(activeTemplate)) {
     if (data && key in data) {
       if (
-        typeof template[key] === "object" &&
-        template[key] !== null
+        typeof activeTemplate[key] === "object" &&
+        activeTemplate[key] !== null
       ) {
-        result[key] = applyTemplateOrder(template[key], data[key]);
+        result[key] = applyTemplateOrder(activeTemplate[key], data[key]);
       } else {
         result[key] = data[key];
       }
     } else {
-      result[key] = JSON.parse(JSON.stringify(template[key]));
+      result[key] = JSON.parse(JSON.stringify(activeTemplate[key]));
     }
   }
 
@@ -813,7 +814,7 @@ function applyTemplateOrder(template, data) {
   return result;
 }
 
-function findUnknownKeys(template, data, path = "") {
+function findUnknownKeys(activeTemplate, data, path = "") {
   let unknown = [];
 
   if (!data || typeof data !== "object") return unknown;
@@ -821,7 +822,7 @@ function findUnknownKeys(template, data, path = "") {
   for (const key of Object.keys(data)) {
     const currentPath = path ? `${path}.${key}` : key;
 
-    const isInTemplate = template && key in template;
+    const isInTemplate = activeTemplate && key in activeTemplate;
     const isLegacyKey = key in legacyKeyMap;
 
     if (!isInTemplate && !isLegacyKey) {
@@ -832,7 +833,7 @@ function findUnknownKeys(template, data, path = "") {
       typeof data[key] === "object" &&
       data[key] !== null
     ) {
-      const subTemplate = template ? template[key] : undefined;
+      const subTemplate = activeTemplate ? activeTemplate[key] : undefined;
       unknown.push(...findUnknownKeys(subTemplate, data[key], currentPath));
     }
   }
