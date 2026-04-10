@@ -208,23 +208,23 @@
 
 
 "MinimumApples":
-"If the amount of apples stored falls below this value, the AI will buy [TradeAmountFood] apples, until reaching this value again.<br><br>If = 0, the AI will never buy apples.<br>If = -1 the AI will sell all apples.",
+"If the amount of apples stored falls below this value, the AI will buy [TradeAmountFood] apples, until reaching this value again.<br><br>If = 0, the AI will never buy apples.",
 
 
 "MinimumCheese":
-"If the amount of cheese stored falls below this value, the AI will buy [TradeAmountFood] cheese, until reaching this value again.<br><br>If = 0, the AI will never buy cheese.<br>If = -1 the AI will sell all cheese.",
+"If the amount of cheese stored falls below this value, the AI will buy [TradeAmountFood] cheese, until reaching this value again.<br><br>If = 0, the AI will never buy cheese.",
 
 
 "MinimumBread":
-"If the amount of bread stored falls below this value, the AI will buy [TradeAmountFood] bread, until reaching this value again.<br><br>If = 0, the AI will never buy bread.<br>If = -1 the AI will sell all bread.<br><br>Can be better to leave at 0 and buy wheat instead with bread-eco.",
+"If the amount of bread stored falls below this value, the AI will buy [TradeAmountFood] bread, until reaching this value again.<br><br>If = 0, the AI will never buy bread.<br><br>Can be better to leave at 0 and buy wheat instead with bread-eco.",
 
 
 "MinimumWheat":
-"If the amount of wheat stored falls below this value, the AI will buy [TradeAmountFood] wheat, until reaching this value again.<br><br>If = 0, the AI will never buy wheat.<br>If = -1 the AI will sell all wheat.",
+"If the amount of wheat stored falls below this value, the AI will buy [TradeAmountFood] wheat, until reaching this value again.<br><br>If = 0, the AI will never buy wheat.",
 
 
 "MinimumHop":
-"If the amount of hop stored falls below this value, the AI will buy [TradeAmountFood] hop, until reaching this value again.<br>If = 0, the AI will never buy hop.<br>If = -1 the AI will sell all hop.",
+"If the amount of hop stored falls below this value, the AI will buy [TradeAmountFood] hop, until reaching this value again.<br>If = 0, the AI will never buy hop.",
 
 
 "TradeAmountFood":
