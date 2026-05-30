@@ -2,5 +2,7 @@
 "AttUnit2": "AttUnitVanguard",
 "AttUnit2Max": "AttUnitVanguardMax",
 "Unknown130": "AttAssaultDelay",
-"Unknown000": "WallDecoration"
+"Unknown000": "WallDecoration",
+"Unknown040": "AIRequestDelay",
+"Unknown124": "RaidRetargetDelay"
 }

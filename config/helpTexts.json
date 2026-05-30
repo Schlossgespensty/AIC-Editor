@@ -412,7 +412,7 @@
 
 
 "SortieUnitRanged":
-"Type of ranged sortie units the AI uses.<br>They position themself outside the castle at points where workers died.<br>Ranged Sorties scale up the more often they are killed. Usually around 25 units more than the given value are recruited later during the game.<br><br>Even recruited if at 0, to disable, choose an unrecruitable unit.<br><br>Sortie units always have priority to be recruited before anything else.",
+"Type of ranged sortie units the AI uses.<br>They position themself outside the castle at points where workers died.<br>Ranged Sorties scale up the more often they are killed. Usually around 25 units more than the given value are recruited later during the game.<br><br>Even recruited if at 0, to disable, choose an unrecruitable unit.<br><br>Sortie units always have priority to be recruited before anything else.<br><br>Tunnelers and Monks do NOT work! but can be used to disable Sorties instead, should you not want them.",
 
 
 "SortieUnitMeleeMin":
@@ -420,7 +420,7 @@
 
 
 "SortieUnitMelee":
-"The type of sortie units the AI sends, to intercept troops that destroy buildings.<br>They will return to the top of the keep when their target died<br><br>Sortie units always have priority to be recruited before anything else.",
+"The type of sortie units the AI sends, to intercept troops that destroy buildings.<br>They will return to the top of the keep when their target died<br><br>Sortie units always have priority to be recruited before anything else.<br><br>Tunnelers and Monks do NOT work! but can be used to disable Sorties instead, should you not want them.",
 
 
 "DefDiggingUnitMax":
@@ -724,7 +724,7 @@
 
 
 "AttUnitMain1":
-"1st unit that the AI recruits for the main group of attackers.<br>Only these units will scale infinitely.<br><br>If it can't afford to recruit a unit slot it tries to recruit the next one in order.",
+"1st unit that the AI recruits for the main group of attackers.<br> It helps using this slot, If the AI is only able to recruit one slot of AttUnitMain for a while (maybe due to lack of a building) to keep the recruit tempo up. Using other slots may slow it down.<br>Only these units will scale infinitely.<br><br>If it can't afford to recruit a unit slot it tries to recruit the next one in order.",
 
 
 "AttUnitMain2":
@@ -780,11 +780,11 @@
 
 
 "RunningUnits_Macemen":
-"If true, maceman will always run, even when grouped with slower units.<br>If false they will match the speed of the slowest unit in their group (like Vanilla)",
+"If true, maceman will always run, even when grouped with slower units.<br>If false they will walk and match the speed of the slowest unit in their group (like Vanilla)",
 
 
 "RunningUnits_Spearmen":
-"If true, spearman will always run, even when grouped with slower units.<br>If false they will match the speed of the slowest unit in their group (like Vanilla).",
+"If true, spearman will always run, even when grouped with slower units.<br>If false they will walk and match the speed of the slowest unit in their group (like Vanilla).",
 
 
 "RunningUnits_Slingers":
